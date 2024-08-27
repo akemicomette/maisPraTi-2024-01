@@ -1,8 +1,42 @@
-# React + Vite
+# Aplicativo MultiApp
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Desenvolvido em aula e com requisitos para refatoramento solicitados pela atividade 5 - Módulo 04
+**do curso Dev FullStack da Codifica Edu pela MaisPraTI**
 
-Currently, two official plugins are available:
+### **Os componentes incluem:**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Localizador de IP;
+- Gerador de QR Code;
+- Tela de login;
+- Ferramenta busca de filmes;
+- Aplicativo de quiz ;
+- Aplicativo para lista de tarefas (to do app).
+
+### Tratamento de erros
+
+Com tratamento de erros para as aplicações do localizador de IP (IPAddresFinder) e da ferramenta de busca de filmes (MovieSearchEngine).
+
+### Alterações no código fonte
+
+App ToDoList: agora funcionando com a lista em branco e salvando no localStorage.
+
+
+## Execução
+
+Para rodar o projeto localmente, siga estes passos:
+
+1. Clone o repositório:
+
+   git clone https://github.com/akemicomette/maisPraTi-2024-01/3-reactjs/atv5/multi-app.git
+   
+2. Navegue para o diretório do projeto;
+   
+  cd maisPraTi-2024-01
+
+3. Instale as dependências:
+   
+   npm install
+     
+4. Inicie o servidor de desenvolvimento:
+
+   npm start
