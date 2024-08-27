@@ -126,6 +126,22 @@ const EditInput = styled.input`
   }
 `;
 
+const SaveButton = styled.button`
+  padding: 6px 12px;
+  margin-left: 10px;
+  background-color: green;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: darkgreen;
+  }
+`;
+
 // Define o componente funcional TodoApp.
 const TodoApp = () => {
   // Usa o hook useState para criar variáveis de estado para a tarefa atual, lista de tarefas, tarefa em edição e texto da tarefa em edição.
@@ -133,47 +149,44 @@ const TodoApp = () => {
   const [tasks, setTasks] = useState([]); // Estado para a lista de tarefas.
   const [editingTaskId, setEditingTaskId] = useState(null); // Estado para o id da tarefa que está sendo editada.
   const [editingTaskText, setEditingTaskText] = useState(''); // Estado para o texto da tarefa que está sendo editada.
-
-  // Usa o hook useEffect para buscar as tarefas quando o componente é montado.
+  
   useEffect(() => {
-    fetchTasks();
+    const storedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    setTasks(storedTasks);
   }, []);
 
-  // Função que busca as tarefas da API e atualiza o estado com as tarefas recebidas.
-  const fetchTasks = async () => {
-    const response = await axios.get(API_URL); // Faz uma requisição GET para obter as tarefas.
-    setTasks(response.data); // Atualiza o estado com os dados recebidos.
+  const saveTasksToLocalStorage = (tasks) => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
   };
-
-  // Função que adiciona uma nova tarefa.
-  const addTask = async () => {
-    if (task) { // Verifica se o campo da tarefa não está vazio.
-      const newTask = { text: task }; // Cria um objeto de tarefa com o texto fornecido.
-      const response = await axios.post(API_URL, newTask); // Faz uma requisição POST para adicionar a nova tarefa.
-      setTasks([...tasks, response.data]); // Atualiza o estado com a nova tarefa adicionada.
-      setTask(''); // Limpa o campo de entrada.
+  const addTask = () => {
+    if (task) {
+      const newTask = { id: Date.now(), text: task };
+      const updatedTasks = [...tasks, newTask];
+      setTasks(updatedTasks);
+      saveTasksToLocalStorage(updatedTasks);
+      setTask('');
     }
   };
 
-  // Função que exclui uma tarefa.
-  const deleteTask = async (id) => {
-    await axios.delete(`${API_URL}/${id}`); // Faz uma requisição DELETE para excluir a tarefa com o id fornecido.
-    setTasks(tasks.filter(task => task.id !== id)); // Atualiza o estado removendo a tarefa excluída.
+  const deleteTask = (id) => {
+    const updatedTasks = tasks.filter((task) => task.id !== id);
+    setTasks(updatedTasks);
+    saveTasksToLocalStorage(updatedTasks);
   };
 
-  // Função que inicia o processo de edição de uma tarefa.
   const editTask = (id, text) => {
-    setEditingTaskId(id); // Define o id da tarefa que está sendo editada.
-    setEditingTaskText(text); // Define o texto da tarefa que está sendo editada.
+    setEditingTaskId(id);
+    setEditingTaskText(text);
   };
 
-  // Função que atualiza uma tarefa existente.
-  const updateTask = async (id) => {
-    const updatedTask = { text: editingTaskText }; // Cria um objeto de tarefa com o texto atualizado.
-    await axios.put(`${API_URL}/${id}`, updatedTask); // Faz uma requisição PUT para atualizar a tarefa.
-    setTasks(tasks.map(task => (task.id === id ? { ...task, text: editingTaskText } : task))); // Atualiza o estado com a tarefa modificada.
-    setEditingTaskId(null); // Limpa o id da tarefa em edição.
-    setEditingTaskText(''); // Limpa o texto da tarefa em edição.
+  const updateTask = (id) => {
+    const updatedTasks = tasks.map((task) =>
+      task.id === id ? { ...task, text: editingTaskText } : task
+    );
+    setTasks(updatedTasks);
+    saveTasksToLocalStorage(updatedTasks);
+    setEditingTaskId(null);
+    setEditingTaskText('');
   };
 
   // Retorna o JSX que define o layout e comportamento do componente.
@@ -191,12 +204,17 @@ const TodoApp = () => {
         {tasks.map((task) => (
           <TaskItem key={task.id}>
             {editingTaskId === task.id ? (
+              <>
               <EditInput
                 type="text"
                 value={editingTaskText}
                 onChange={(e) => setEditingTaskText(e.target.value)}
                 onBlur={() => updateTask(task.id)}
               />
+              <SaveButton onClick={() => updateTask(task.id)}>
+                  Save
+                </SaveButton>
+              </>
             ) : (
               <>
                 {task.text}

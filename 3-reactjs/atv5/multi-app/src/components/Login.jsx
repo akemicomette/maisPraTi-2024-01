@@ -51,14 +51,22 @@ const Login = ({ onLogin }) => {
   const [username, setUsername] = useState(''); // Define o estado para o nome de usuário
   const [password, setPassword] = useState(''); // Define o estado para a senha
 
-  // Função para lidar com o envio do formulário
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Previne o comportamento padrão do formulário
-    if (username === 'admin' && password === 'password') {
-      onLogin(); // Chama a função onLogin passada como prop se as credenciais estiverem corretas
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const response = await fakeAuth(username, password);
+    if (response.token) {
+      localStorage.setItem('token', response.token); // Armazena o token no localStorage
+      onLogin(); // Função de callback para redirecionar o usuário após o login
     } else {
-      alert('Invalid credentials'); // Exibe um alerta se as credenciais estiverem incorretas
+      alert('Credenciais inválidas');
     }
+  };
+
+  const fakeAuth = async (username, password) => {
+    if (username === 'admin' && password === 'password') {
+      return { token: 'fake-jwt-token' }; // Simulação de token JWT
+    }
+    return { error: 'Credenciais inválidas' };
   };
 
   return (
